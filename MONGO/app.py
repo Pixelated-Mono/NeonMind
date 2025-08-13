@@ -35,7 +35,7 @@ try:
 except ServerSelectionTimeoutError as e:
     print("Could not connect to MongoDB Atlas:", e)
 
-@app.route("/login-page")
+@app.route("/login.html")
 def login_page():
     return render_template("login.html")
 
@@ -43,8 +43,8 @@ def login_page():
 def logins_page():
     return render_template("logins.html")
 
-@app.route("/register-page")
-def logins_page():
+@app.route("/register.html")
+def register_page():
     return render_template("register.html")
 
 
