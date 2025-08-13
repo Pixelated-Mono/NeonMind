@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chat</title>
+</head>
+<body>
+    <h1>Ask the AI</h1>
+    <textarea id="userInput" placeholder="Type something..."></textarea><br>
+    <button onclick="sendToAI()">Send</button>
+    <h2>Response:</h2>
+    <div id="response"></div>
+
+    <script>
+        async function sendToAI() {
+            const input = document.getElementById("userInput").value;
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: input })
+            });
+            const data = await res.json();
+            document.getElementById("response").innerText = data.reply;
+        }
+    </script>
+</body>
+</html>
