@@ -1,0 +1,41 @@
+# Code Changes
+
+changed the http://localhost:5000/register to /api/register
+same for the login part - /api/login
+canged the abosolute url which was "http://localhost:5000/login" as this will alow for the code to run on other devices
+
+
+included a proxy code to the json file
+As the API key that was mentioned was for other devices, when it doesn't recognize the new code, it loops back to the local host machine (this is specifically done to make sure that the code works normally when running it locally)
+The proxy forwads the call of 'api/login' back to the port 5000 to remove the "404 not found" error
+
+Moved the .env file from back end to front end
+--SUCCESS
+The frontend is fetching data succesfully from the backend
+Issue to note - the frontend code should not contain the database code as it is a security risk
+Will have to move the .env file from frontend to the backend, having the code to be changed in a bunch of places
+- We need to create two differnt .env files, as of now it is in one, but the secrets, the db and stuff should be in another .env file inside the back end
+
+Trying 'ngrok'
+--SUCCESS
+The site is now accessible by anyone with the valid link from ngrok
+code to run ngrok - "ngrok http 5000 --request-header-add "ngrok-skip-browser-warning: true"
+
+________________________________________________________________
+# How to run the file
+
+Run the server code as intended - "npm start" and "python/py app.py" 
+
+To make the code public, or paritally avaialable to others, use 'ngrok'
+Go to the website   "https://dashboard.ngrok.com/get-started/setup/windows" and download
+Make sure to donwload the zip file, dont use msstore, winget and scoop, some of them contains an old version which might not work and can cause issues
+
+run the code that is given right below the download button to gain access to the auth-key, run it in the terminal of the folder where you saved the ngrok.exe file
+Or just open the .exe file and it will open the cmd
+
+ngrok http 3000 --request-header-add "ngrok-skip-browser-warning:true"
+-- run this command in cmd
+
+you will see the link next to "Forwarding--"
+
+NOTE: 3000 is the port number, this is to connect to the react application, dont use 5000 as it connects directly to the python, flask
