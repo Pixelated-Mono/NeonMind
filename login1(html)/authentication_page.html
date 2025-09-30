@@ -1,0 +1,109 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEONMIND - Authentication</title>
+    <!-- Link to the separate CSS file -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Load Inter font for better typography, although your CSS uses Segoe UI fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="app-container">
+
+    <!-- Brand Outside the Card -->
+    <h1 class="brand">NEONMIND</h1>
+
+    <!-- Auth Card -->
+    <div class="card">
+        <h2 id="cardTitle">Welcome Back</h2>
+        <p class="subtitle" id="cardSubtitle">Login to continue your journey</p>
+
+        <form class="form" id="authForm">
+            <!-- Full Name Input (Visible in Sign Up mode) -->
+            <input type="text" placeholder="Full Name" class="input hidden-signup-field" id="fullNameInput">
+            
+            <input type="email" placeholder="Email Address" class="input" required>
+            <input type="password" placeholder="Password" class="input" required>
+
+            <!-- Confirm Password Input (Visible in Sign Up mode) -->
+            <input type="password" placeholder="Confirm Password" class="input hidden-signup-field" id="confirmPasswordInput">
+
+            <button type="submit" class="btn" id="submitButton">Login</button>
+        </form>
+
+        <p class="switch">
+            <span id="switchText">Don't have an account?</span> 
+            <span id="switchLink" onclick="toggleAuthMode()">Sign Up</span>
+        </p>
+    </div>
+
+    <!-- JavaScript to handle the switch between Login and Sign Up -->
+    <script>
+        let isLogin = true;
+
+        const cardTitle = document.getElementById('cardTitle');
+        const cardSubtitle = document.getElementById('cardSubtitle');
+        const submitButton = document.getElementById('submitButton');
+        const switchText = document.getElementById('switchText');
+        const switchLink = document.getElementById('switchLink');
+        const fullNameInput = document.getElementById('fullNameInput');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const authForm = document.getElementById('authForm');
+
+        /**
+         * Toggles the UI state between Login and Sign Up modes.
+         */
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+
+            if (isLogin) {
+                // Switch to Login UI
+                cardTitle.textContent = "Welcome Back";
+                cardSubtitle.textContent = "Login to continue your journey";
+                submitButton.textContent = "Login";
+                switchText.textContent = "Don't have an account?";
+                switchLink.textContent = "Sign Up";
+                
+                // Hide Sign Up specific fields
+                fullNameInput.style.display = 'none';
+                confirmPasswordInput.style.display = 'none';
+            } else {
+                // Switch to Sign Up UI
+                cardTitle.textContent = "Create Account";
+                cardSubtitle.textContent = "Sign up and join the NEONMIND experience";
+                submitButton.textContent = "Sign Up";
+                switchText.textContent = "Already have an account?";
+                switchLink.textContent = "Login";
+
+                // Show Sign Up specific fields
+                fullNameInput.style.display = 'block';
+                confirmPasswordInput.style.display = 'block';
+            }
+        }
+
+        // Initialize form to Login mode on load
+        toggleAuthMode();
+
+        // Prevent default form submission and simulate success (replaces React handleSubmit)
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // NOTE: Custom alert message box implementation is required here to replace `alert()`.
+            // For a pure HTML/JS implementation without a full custom modal, we'll use console output for now.
+            
+            if (isLogin) {
+                console.log("LOGIN Attempt: Form submitted (Front-end only).");
+                // Replace with your actual login API call
+            } else {
+                console.log("SIGN UP Attempt: Form submitted (Front-end only).");
+                // Replace with your actual signup API call
+            }
+
+            // You would normally show a success message or redirect here
+            cardSubtitle.textContent = isLogin ? "Login successful (check console)." : "Account created (check console).";
+        });
+
+    </script>
+</body>
+</html>
