@@ -1,0 +1,197 @@
+/* Reset from index(1).css and App(1).css */
+body, html {
+    margin: 0;
+    padding: 0;
+    /* Prioritize Poppins as specified in App(1).css, use a modern fallback */
+    font-family: "Poppins", 'Segoe UI', 'Roboto', sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+    height: 100%;
+}
+
+.app {
+    min-height: 100vh; /* Ensure app container covers full height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: linear-gradient(90deg, #ff00ff, #00ffff); /* Neon gradient */
+    color: #fff;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 0; /* Remove default ul margin */
+}
+.nav-links li {
+    transition: color 0.3s ease;
+}
+.nav-links li:hover {
+    color: #0f0f0f; /* Slight contrast hover */
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.hero h2 {
+    font-size: clamp(30px, 5vw, 48px); /* Responsive font size */
+    margin-bottom: 20px;
+}
+
+.highlight {
+    color: #00ffff; /* Primary cyan color */
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.hero p {
+    font-size: clamp(16px, 2.5vw, 20px);
+    margin-bottom: 30px;
+}
+
+.cta {
+    background: linear-gradient(90deg, #ff00ff, #00ffff);
+    border: none;
+    padding: 15px 40px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    border-radius: 30px;
+    font-weight: 700;
+    transition: 0.3s ease-in-out;
+}
+
+.cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.7); /* Cyan glow on hover */
+}
+
+/* Features (App.js) */
+.features {
+    display: flex;
+    flex-wrap: wrap; /* Added for responsiveness */
+    justify-content: center;
+    gap: 30px;
+    padding: 80px 20px;
+    background: #121212;
+}
+
+.feature-card {
+    background: #1f1f1f;
+    padding: 30px;
+    border-radius: 15px;
+    width: 250px;
+    max-width: 100%; /* Ensure responsiveness */
+    text-align: center;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(255, 0, 255, 0.5); /* Magenta glow on hover */
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+    color: #00ffff; /* Cyan color */
+    font-size: 1.4rem;
+}
+
+/* Secondary Features (HomePage.jsx) */
+.secondary-features {
+    padding: 60px 20px;
+    background: #0f0f0f;
+    color: #f0f0f0;
+}
+
+.secondary-content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.secondary-content-wrapper h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.secondary-content-wrapper p {
+    margin-bottom: 30px;
+    color: #aaa;
+}
+
+.secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.grid-card {
+    padding: 25px;
+    border: 1px solid #333; /* Darker border for the dark theme */
+    border-radius: 12px;
+    text-align: left;
+    background: #1a1a1a;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.grid-card:hover {
+    border-color: #ff00ff;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+}
+
+.grid-card h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    color: #00ffff;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #0f0f0f;
+    border-top: 1px solid #222;
+    margin-top: auto; /* Push footer to the bottom */
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+    .nav-links {
+        display: none; /* Hide links on mobile for simplicity, or use a hamburger menu */
+    }
+    .hero {
+        padding: 60px 20px;
+    }
+    .features {
+        flex-direction: column;
+        align-items: center;
+        padding: 50px 20px;
+    }
+    .feature-card {
+        width: 100%;
+        max-width: 350px;
+    }
+}

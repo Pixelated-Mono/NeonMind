@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Mind - Study Companion</title>
+    <!-- Link to the combined CSS file -->
+    <link rel="stylesheet" href="main_styles.css">
+    <!-- Load Poppins font (specified in your CSS) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="app">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <h1 class="logo">Neon Mind</h1>
+            <ul class="nav-links">
+                <li>Home</li>
+                <li>Features</li>
+                <li>About</li>
+                <li>Contact</li>
+            </ul>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <h2>Welcome to <span class="highlight">Neon Mind</span></h2>
+            <p>
+                Boost your productivity, track your learning, and keep your mind
+                glowing. ✨
+            </p>
+            <button class="cta">Get Started</button>
+        </header>
+
+        <!-- Main Content (Features from App.js) -->
+        <section class="features">
+            <div class="feature-card">
+                <h3>⚡ Smart Learning</h3>
+                <p>Organize your notes and goals in one place.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎯 Focus Mode</h3>
+                <p>Stay distraction-free with custom timers.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Progress Tracker</h3>
+                <p>Track your growth with clean analytics.</p>
+            </div>
+        </section>
+
+        <!-- Secondary Content (HomePage.jsx content) -->
+        <section class="secondary-features">
+            <div class="secondary-content-wrapper">
+                <h1>Welcome to StudyApp 📚</h1>
+                <p>Your personal study companion, inspired by Penseum.</p>
+
+                <div class="secondary-grid">
+                    <div class="grid-card">
+                        <h3>📖 Notes</h3>
+                        <p>Store and organize your study notes here.</p>
+                    </div>
+                    <div class="grid-card">
+                        <h3>✅ Tasks</h3>
+                        <p>Keep track of your assignments and deadlines.</p>
+                    </div>
+                    <div class="grid-card">
+                        <h3>🧠 Quizzes</h3>
+                        <p>Test your knowledge with custom quizzes.</p>
+                    </div>
+                    <div class="grid-card">
+                        <h3>📅 Planner</h3>
+                        <p>Plan your study schedule and stay on track.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 Neon Mind | All rights reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        // Update the current year dynamically for the footer (mimicking React logic)
+        document.querySelector('.footer p').textContent = 
+            `© ${new Date().getFullYear()} Neon Mind | All rights reserved`;
+    </script>
+</body>
+</html>
