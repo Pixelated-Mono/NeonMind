@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonMind Study App</title>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables for Neon Theme */
+        :root {
+            --neon-dark: #0f0821;
+            --neon-blue: #4c51bf;
+            --neon-purple: #805ad5;
+            --neon-pink: #d53f8c;
+            --gray-900: #1f2937;
+            --gray-800: #181920;
+            --gray-700: #374151;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --white: #ffffff;
+            --light-text: #e2e8f0;
+            --green-online: #34d399;
+        }
+
+        /* Base Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--neon-dark);
+            min-height: 100vh;
+            color: var(--white);
+            margin: 0;
+            display: flex;
+        }
+
+        /* 1. Main App Layout */
+        .app-container {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px; 
+            padding: 24px; 
+            background-color: var(--neon-dark);
+            border-right: 1px solid var(--gray-800);
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar .logo {
+            margin-bottom: 40px; 
+            display: flex;
+            align-items: center;
+        }
+        .sidebar .logo h1 {
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: var(--white);
+        }
+
+        .new-project-btn {
+            width: 100%;
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            background-color: var(--neon-blue);
+            font-weight: 600; 
+            margin-bottom: 32px; 
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(76, 81, 191, 0.7), 0 0 20px rgba(76, 81, 191, 0.5); 
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .new-project-btn:hover {
+            background-color: var(--neon-purple);
+        }
+
+        .recent-projects h2 {
+            font-size: 0.875rem; 
+            font-weight: 600; 
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em; 
+            margin-bottom: 8px; 
+        }
+        .recent-project-item {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: color 0.1s;
+        }
+        .recent-project-item:hover {
+            color: var(--neon-blue);
+        }
+        .recent-projects p {
+            font-size: 0.875rem; 
+            color: var(--gray-500);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-y: auto; /* Allow scrolling for roadmap view */
+        }
+        
+        /* Utility for hiding/showing views */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Profile Icon */
+        .profile-icon {
+            position: absolute;
+            top: 16px; 
+            right: 16px; 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 9999px; 
+            background-color: var(--neon-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem; 
+            font-weight: 700;
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 15px rgba(128, 90, 213, 0.9); 
+            cursor: pointer;
+            z-index: 60; 
+        }
+        
+        /* --- PROFILE DROPDOWN START --- */
+        .profile-dropdown {
+            position: absolute;
+            top: 60px; 
+            right: 10px;
+            width: 150px;
+            background-color: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            padding: 8px 0;
+            z-index: 55;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out, visibility 0.2s;
+        }
+        .profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.1s, color 0.1s;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(76, 81, 191, 0.2); 
+            color: var(--white);
+        }
+        /* --- PROFILE DROPDOWN END --- */
+
+        /* Welcome View Styles */
+        .welcome-view {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main-title {
+            font-size: 2.25rem; 
+            font-weight: 800; 
+            margin-bottom: 1rem; 
+        }
+        .main-title .neon-span {
+            color: var(--neon-purple);
+            text-shadow: 0 0 8px rgba(128, 90, 213, 0.8);
+        }
+        .main-subtitle {
+            color: var(--gray-400);
+            margin-bottom: 3rem; 
+        }
+
+        .input-group {
+            width: 100%;
+            max-width: 640px; 
+            display: flex;
+            gap: 0.75rem; 
+            margin-bottom: 3rem; 
+        }
+        .input-group input {
+            flex-grow: 1;
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--gray-700);
+            background-color: var(--gray-800);
+            color: var(--white);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 2px var(--neon-blue); 
+        }
+        .input-group button {
+            padding: 12px 24px; 
+            border-radius: 12px; 
+            background-color: var(--neon-purple);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(128, 90, 213, 0.9);
+            transition: background-color 0.2s;
+        }
+        .input-group button:hover {
+            background-color: var(--neon-blue);
+        }
+
+        .popular-tags {
+            display: flex;
+            gap: 1rem; 
+        }
+        .popular-tags .tag-label {
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+        .popular-tags span:not(.tag-label) {
+            padding: 4px 12px; 
+            font-size: 0.875rem; 
+            border-radius: 9999px; 
+            background-color: var(--gray-800);
+            color: var(--neon-blue);
+            border: 1px solid rgba(76, 81, 191, 0.3); 
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .popular-tags span:hover {
+            background-color: var(--gray-700);
+        }
+        
+        /* Roadmap View Styles */
+        .roadmap-result {
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            padding-top: 0;
+            padding-bottom: 60px; /* Space for the start new roadmap button */
+        }
+        .roadmap-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px rgba(76, 81, 191, 0.5);
+        }
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .roadmap-step {
+            background-color: var(--gray-800);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--neon-purple);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+        .roadmap-step h3 {
+            font-size: 1.1rem;
+            color: var(--neon-pink);
+            margin: 0 0 5px 0;
+        }
+        .roadmap-step p {
+            font-size: 0.9rem;
+            color: var(--gray-400);
+            margin: 0;
+        }
+
+        /* Loading Spinner Simulation */
+        .loading-spinner {
+            border: 4px solid var(--gray-700);
+            border-top: 4px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        /* 2. Chatbot Toggle Button */
+        #chatbot-toggle-btn {
+            position: fixed;
+            bottom: 24px; 
+            right: 24px; 
+            padding: 16px; 
+            border-radius: 9999px; 
+            background-color: var(--neon-blue);
+            border: none;
+            cursor: pointer;
+            z-index: 60;
+            
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 10px rgba(76, 81, 191, 0.7); 
+        }
+        #chatbot-toggle-btn:hover {
+            box-shadow: 0 0 15px rgba(76, 81, 191, 1), 0 0 30px rgba(128, 90, 213, 0.5); 
+            transform: scale(1.05);
+        }
+        #chatbot-toggle-btn svg {
+            width: 28px; 
+            height: 28px;
+            color: var(--white);
+        }
+
+        /* Chatbot Overlay */
+        #chatbot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 49; /* Below chatbot (50), above main content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s;
+            cursor: pointer;
+        }
+        .chatbot-open #chatbot-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 3. Chatbot Container (Fixed position, slides in from the right) */
+        #chatbot-container {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            height: 100vh;
+            width: 380px; 
+            right: -380px; 
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--gray-800);
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.8); 
+            overflow: hidden;
+            z-index: 50; 
+            
+            transition: right 0.4s ease-in-out;
+            backdrop-filter: blur(8px);
+            background-color: rgba(15, 8, 33, 0.95);
+        }
+        .chatbot-open #chatbot-container {
+            right: 0; 
+        }
+        
+        /* Chatbot Header */
+        .chatbot-header {
+            padding: 16px; 
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-800);
+        }
+        .chatbot-header .avatar {
+            width: 40px; 
+            height: 40px; 
+            background-color: var(--neon-purple);
+            border-radius: 9999px; 
+            margin-right: 12px; 
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 10px rgba(128, 90, 213, 0.7);
+        }
+        .chatbot-header p {
+            font-size: 0.875rem; 
+            font-weight: 600;
+        }
+        .chatbot-header .status {
+            font-size: 0.75rem; 
+            color: var(--green-online);
+            display: flex;
+            align-items: center;
+        }
+        .chatbot-header .status .dot {
+            width: 8px; 
+            height: 8px; 
+            border-radius: 9999px;
+            background-color: var(--green-online);
+            margin-right: 4px;
+        }
+        .chatbot-header .close-btn {
+            margin-left: auto;
+            padding: 8px;
+            color: var(--gray-400);
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .chatbot-header .close-btn:hover {
+            color: var(--white);
+        }
+
+        /* Message Bubbles */
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 16px; 
+            display: flex;
+            flex-direction: column;
+            gap: 16px; 
+        }
+
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            position: relative;
+            background-color: rgba(30, 20, 60, 0.9); 
+            color: var(--light-text);
+            max-width: 80%;
+            width: fit-content;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
+        }
+        .message-bubble p {
+            margin: 0;
+        }
+        .message-bubble .timestamp {
+            font-size: 0.75rem; 
+            color: var(--gray-500);
+            margin-top: 4px; 
+        }
+
+
+        .assistant-bubble {
+            align-self: flex-start;
+            background-color: rgba(30, 20, 60, 0.9);
+            border: 1px solid rgba(76, 81, 191, 0.5);
+            border-bottom-left-radius: 0;
+        }
+        
+        .user-bubble {
+            align-self: flex-end;
+            margin-left: auto;
+            background-color: rgba(60, 20, 40, 0.9);
+            border: 1px solid rgba(213, 63, 140, 0.5);
+            border-bottom-right-radius: 0;
+        }
+        .user-bubble .timestamp {
+            text-align: left;
+        }
+
+        /* Chat Input Area */
+        .chat-input-area {
+            padding: 16px; 
+            border-top: 1px solid var(--gray-800);
+            display: flex;
+            align-items: center;
+        }
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--gray-700);
+            background-color: var(--gray-900);
+            color: var(--white);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .chat-input-area input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 1px var(--neon-blue); 
+        }
+        .chat-input-area .send-btn {
+            margin-left: 12px; 
+            padding: 12px; 
+            border-radius: 12px; 
+            background-color: var(--neon-pink);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(213, 63, 140, 0.8), 0 0 16px rgba(213, 63, 140, 0.4); 
+            transition: background-color 0.2s;
+        }
+        .chat-input-area .send-btn:hover {
+            background-color: var(--neon-purple);
+        }
+        .chat-input-area .send-btn svg {
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* Responsive adjustments for mobile screens */
+        @media (max-width: 640px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-800);
+                padding: 16px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .sidebar .logo {
+                margin-bottom: 0;
+            }
+            .new-project-btn {
+                display: none; 
+            }
+            .recent-projects {
+                display: none; 
+            }
+            
+            .main-content {
+                padding: 20px;
+                padding-top: 80px; 
+            }
+            
+            /* Chatbot full width on small screens */
+            #chatbot-container {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen text-white flex">
+
+    <!-- 1. Main App Layout -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <!-- Logo/Text for NeonMind -->
+                <svg class="w-6 h-6 mr-2" style="width: 24px; height: 24px; margin-right: 8px; color: var(--neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9.25 10M10.75 17L11.25 10M18 8H6M18 8V6a2 2 0 00-2-2H8a2 2 0 00-2 2v2M18 8H6M15 13H9m6 4h-6"></path></svg>
+                <h1>NeonMind</h1>
+            </div>
+
+            <!-- New Project Button -->
+            <button class="new-project-btn" id="new-project-btn">
+                + New Project
+            </button>
+
+            <!-- Recent Projects Section -->
+            <div class="recent-projects">
+                <h2>Recent Projects</h2>
+                <div id="recent-projects-list">
+                    <p id="no-projects-message">No projects yet. Start your first roadmap!</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- User Profile Icon (Top Right) -->
+            <div class="profile-icon" id="profile-icon">
+                JD
+            </div>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profile-dropdown" class="profile-dropdown">
+                <a href="#" class="dropdown-item" id="profile-link">Profile</a>
+                <a href="#" class="dropdown-item" id="settings-link">Settings</a>
+                <a href="#" class="dropdown-item" id="logout-link">Logout</a>
+            </div>
+
+            <!-- Welcome View (Initial Content) -->
+            <div id="welcome-view" class="welcome-view">
+                <h2 class="main-title">Welcome to <span class="neon-span">NeonMind</span></h2>
+                <p class="main-subtitle">Turn any topic into a glowing learning roadmap ✨</p>
+
+                <div class="input-group">
+                    <input type="text" id="main-input" placeholder="What would you like to learn today?" />
+                    <button id="generate-roadmap-btn">
+                        Generate Roadmap
+                    </button>
+                </div>
+                
+                <div class="popular-tags" id="popular-tags-container">
+                    <span class="tag-label">Popular:</span>
+                    <span>Machine Learning</span>
+                    <span>Web Dev</span>
+                    <span>Data Science</span>
+                    <span>UI/UX</span>
+                </div>
+            </div>
+            
+            <!-- Roadmap Result View (Initially hidden) -->
+            <div id="roadmap-view" class="roadmap-result hidden">
+                <div class="loading-spinner hidden" id="loading-spinner"></div>
+                <h2 class="roadmap-title">Roadmap: <span id="roadmap-topic"></span></h2>
+                <div id="roadmap-steps" class="steps-container">
+                    <!-- Steps will be generated here -->
+                </div>
+                <button id="back-to-welcome-btn" class="new-project-btn" style="margin-top: 30px;">
+                    ← Start New Roadmap
+                </button>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Chatbot Overlay -->
+    <div id="chatbot-overlay"></div>
+
+    <!-- 2. Chatbot Toggle Button (Bottom Right) -->
+    <button id="chatbot-toggle-btn" aria-label="Open Chatbot">
+        <!-- Chat Icon (Inline SVG) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M10 12h.01M14 12h.01M18 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 01-9-9 9 9 0 0118 0 9 9 0 01-9 9zM15 15l-3 3-3-3m3 3V6" />
+        </svg>
+    </button>
+
+    <!-- 3. Chatbot Container (Fixed position, slides in from the right) -->
+    <div id="chatbot-container">
+        
+        <!-- Chatbot Header -->
+        <div class="chatbot-header">
+            <div class="avatar"></div>
+            <div>
+                <p>Neon assistant</p>
+                <p class="status">
+                    <span class="dot"></span> Online
+                </p>
+            </div>
+            <button id="chatbot-close-btn" class="close-btn">
+                <!-- Close X Icon (Inline SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-messages">
+            <!-- Initial Greeting (Static) -->
+            <div class="assistant-bubble message-bubble">
+                <p>Hi, how can I help you?</p>
+                <p class="timestamp">now</p>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button id="send-btn" class="send-btn">
+                <!-- Send Icon (Inline SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+                </svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 4. JavaScript for App Interactivity -->
+    <script>
+        // --- DATA ---
+        let user = {
+            name: 'John Doe',
+            initials: 'JD'
+        };
+
+        // --- GLOBAL ELEMENTS ---
+        const body = document.body;
+        
+        // Chatbot elements
+        const toggleBtn = document.getElementById('chatbot-toggle-btn');
+        const closeBtn = document.getElementById('chatbot-close-btn');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const chatbotOverlay = document.getElementById('chatbot-overlay');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessages = document.querySelector('.chat-messages');
+
+        // Profile elements
+        const profileIcon = document.getElementById('profile-icon');
+        const profileDropdown = document.getElementById('profile-dropdown');
+
+        // Main App elements
+        const newProjectBtn = document.getElementById('new-project-btn');
+        const generateRoadmapBtn = document.getElementById('generate-roadmap-btn');
+        const mainInput = document.getElementById('main-input');
+        const popularTagsContainer = document.getElementById('popular-tags-container');
+        
+        // Main App View elements
+        const welcomeView = document.getElementById('welcome-view');
+        const roadmapView = document.getElementById('roadmap-view');
+        const roadmapTopic = document.getElementById('roadmap-topic');
+        const roadmapStepsContainer = document.getElementById('roadmap-steps');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const backToWelcomeBtn = document.getElementById('back-to-welcome-btn');
+        
+        // Sidebar elements
+        const recentProjectsList = document.getElementById('recent-projects-list');
+        const noProjectsMessage = document.getElementById('no-projects-message');
+
+
+        // Function to format time (e.g., 10:30 PM)
+        function formatTime(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+
+        // --- PROFILE FUNCTIONS --- (Now for dropdown)
+        function toggleProfileDropdown() {
+            profileDropdown.classList.toggle('active');
+        }
+
+        // --- CHATBOT FUNCTIONS ---
+        function openChatbot() {
+            body.classList.add('chatbot-open');
+            toggleBtn.style.display = 'none'; 
+            chatInput.focus(); 
+        }
+
+        function closeChatbot() {
+            body.classList.remove('chatbot-open');
+            setTimeout(() => {
+                toggleBtn.style.display = 'block'; 
+            }, 400); 
+        }
+        
+        function sendMessage() {
+            const messageText = chatInput.value.trim();
+            if (messageText === "") return;
+
+            // 1. Create User message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'user-bubble message-bubble';
+            messageDiv.innerHTML = `<p>${messageText}</p><p class="timestamp">${formatTime(new Date())}</p>`;
+            chatMessages.appendChild(messageDiv);
+
+            // 2. Clear input and scroll to bottom
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 3. Simulate Assistant Reply
+            setTimeout(() => {
+                const replyText = `I received your message about: "${messageText}". I can help you create a roadmap for any topic!`;
+                
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'assistant-bubble message-bubble';
+                replyDiv.innerHTML = `<p>${replyText}</p><p class="timestamp">${formatTime(new Date())}</p>`;
+                
+                chatMessages.appendChild(replyDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500); 
+        }
+
+
+        // --- MAIN APP FUNCTIONS ---
+        function showWelcomeView() {
+            roadmapView.classList.add('hidden');
+            welcomeView.classList.remove('hidden');
+            loadingSpinner.classList.add('hidden');
+            mainInput.value = '';
+        }
+
+        function addRecentProject(topic) {
+            noProjectsMessage.classList.add('hidden');
+            const projectDiv = document.createElement('div');
+            projectDiv.className = 'recent-project-item';
+            projectDiv.textContent = topic;
+            projectDiv.addEventListener('click', () => {
+                mainInput.value = topic;
+                showWelcomeView();
+            });
+            recentProjectsList.prepend(projectDiv);
+
+            const maxItems = 5;
+            while (recentProjectsList.children.length > maxItems + 1) { // +1 for the <p> tag
+                recentProjectsList.removeChild(recentProjectsList.lastElementChild);
+            }
+        }
+
+        function generateRoadmap() {
+            const topic = mainInput.value.trim() || 'General Study Skills';
+            welcomeView.classList.add('hidden');
+            roadmapView.classList.remove('hidden');
+            loadingSpinner.classList.remove('hidden');
+            roadmapStepsContainer.innerHTML = ''; 
+            roadmapTopic.textContent = topic;
+            
+            setTimeout(() => {
+                loadingSpinner.classList.add('hidden');
+                const steps = [
+                    { title: "Step 1: Core Concepts & Fundamentals", description: `Research and define the basic terminology, history, and key players in ${topic}.` },
+                    { title: "Step 2: Practical Application Exercises", description: `Complete hands-on tutorials or coding exercises related to ${topic}.` },
+                    { title: "Step 3: Intermediate Deep Dive", description: "Read advanced articles, case studies, and watch in-depth lectures." },
+                    { title: "Step 4: Project and Portfolio Building", description: "Design and execute a capstone project to demonstrate mastery." },
+                ];
+
+                steps.forEach(step => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'roadmap-step';
+                    stepDiv.innerHTML = `<h3>${step.title}</h3><p>${step.description}</p>`;
+                    roadmapStepsContainer.appendChild(stepDiv);
+                });
+                
+                addRecentProject(topic);
+                document.querySelector('.main-content').scrollTop = 0;
+            }, 1500); 
+        }
+        
+        // --- INITIALIZATION & EVENT LISTENERS ---
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            profileIcon.textContent = user.initials;
+        });
+
+        // Profile Listeners
+        profileIcon.addEventListener('click', (e) => {
+            toggleProfileDropdown();
+            e.stopPropagation(); // Prevents the document click from closing it immediately
+        });
+
+        document.addEventListener('click', (e) => {
+            if (profileDropdown.classList.contains('active') && !profileIcon.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+
+        document.getElementById('profile-link').addEventListener('click', () => { profileDropdown.classList.remove('active'); console.log('Navigated to Profile page.'); });
+        document.getElementById('settings-link').addEventListener('click', () => { profileDropdown.classList.remove('active'); console.log('Navigated to Settings page.'); });
+        document.getElementById('logout-link').addEventListener('click', () => { profileDropdown.classList.remove('active'); console.log('Logged out user.'); });
+
+        // Chatbot Listeners
+        toggleBtn.addEventListener('click', openChatbot);
+        closeBtn.addEventListener('click', closeChatbot);
+        chatbotOverlay.addEventListener('click', closeChatbot);
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                sendMessage();
+            }
+        });
+
+        // Main App Listeners
+        newProjectBtn.addEventListener('click', showWelcomeView);
+        generateRoadmapBtn.addEventListener('click', generateRoadmap);
+        backToWelcomeBtn.addEventListener('click', showWelcomeView);
+        
+        // Popular tags fill the main input
+        popularTagsContainer.querySelectorAll('span:not(.tag-label)').forEach(tag => {
+            tag.addEventListener('click', (e) => {
+                mainInput.value = e.target.textContent;
+            });
+        });
+
+    </script>
+</body>
+</html>
