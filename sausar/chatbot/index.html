@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonMind Study App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen text-white flex">
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <svg class="w-6 h-6 mr-2" style="width: 24px; height: 24px; margin-right: 8px; color: var(--neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9.25 10M10.75 17L11.25 10M18 8H6M18 8V6a2 2 0 00-2-2H8a2 2 0 00-2 2v2M18 8H6M15 13H9m6 4h-6"></path></svg>
+                <h1>NeonMind</h1>
+            </div>
+
+            <button class="new-project-btn" id="new-project-btn">
+                + New Project
+            </button>
+
+            <div class="recent-projects">
+                <h2>Recent Projects</h2>
+                <div id="recent-projects-list">
+                    <p id="no-projects-message">No projects yet. Start your first roadmap!</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="profile-icon" id="profile-icon">
+                JD
+            </div>
+            
+            <div id="profile-dropdown" class="profile-dropdown hidden">
+                <a href="#" class="dropdown-item" id="profile-link">Profile</a>
+                <a href="#" class="dropdown-item" id="settings-link">Settings</a>
+                <a href="#" class="dropdown-item" id="logout-link">Logout</a>
+            </div>
+
+            <div id="welcome-view" class="welcome-view">
+                <h2 class="main-title">Welcome to <span class="neon-span">NeonMind</span></h2>
+                <p class="main-subtitle">Turn any topic into a glowing learning roadmap ✨</p>
+
+                <div class="input-group">
+                    <input type="text" id="main-input" placeholder="What would you like to learn today?" />
+                    <button id="generate-roadmap-btn">
+                        Generate Roadmap
+                    </button>
+                </div>
+                
+                <div class="popular-tags" id="popular-tags-container">
+                    <span class="tag-label">Popular:</span>
+                    <span>Machine Learning</span>
+                    <span>Web Dev</span>
+                    <span>Data Science</span>
+                    <span>UI/UX</span>
+                </div>
+            </div>
+            
+            <div id="roadmap-view" class="roadmap-result hidden">
+                <div class="loading-spinner hidden" id="loading-spinner"></div>
+                <h2 class="roadmap-title">Roadmap: <span id="roadmap-topic"></span></h2>
+                <div id="roadmap-steps" class="steps-container">
+                    </div>
+                <button id="back-to-welcome-btn" class="new-project-btn" style="margin-top: 30px;">
+                    ← Start New Roadmap
+                </button>
+            </div>
+            
+        </main>
+    </div>
+
+    <button id="chatbot-toggle-btn" aria-label="Open Chatbot">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M10 12h.01M14 12h.01M18 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 01-9-9 9 9 0 0118 0 9 9 0 01-9 9zM15 15l-3 3-3-3m3 3V6" />
+        </svg>
+    </button>
+
+    <div id="chatbot-container">
+        
+        <div class="chatbot-header">
+            <div class="avatar"></div>
+            <div>
+                <p>Neon assistant</p>
+                <p class="status">
+                    <span class="dot"></span> Online
+                </p>
+            </div>
+            <button id="chatbot-close-btn" class="close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="chat-messages">
+            <div class="assistant-bubble message-bubble">
+                <p>Hi, how can I help you?</p>
+                <p class="timestamp">now</p>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button id="send-btn" class="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
