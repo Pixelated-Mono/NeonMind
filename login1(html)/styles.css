@@ -1,9 +1,7 @@
 body {
     margin: 0;
-    /* Using 'Inter' as it's a popular modern font, falling back to your original stack */
-    font-family: 'Inter', "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
 }
 
 code {
