@@ -19,6 +19,9 @@ function Home() {
   const fileInputRef = useRef(null);
   const chatbotBodyRef = useRef(null);
 
+  // State to manage the current view
+  const [currentView, setCurrentView] = useState('projects');
+
   // Auto-scroll chat to the bottom
   useEffect(() => {
     if (chatbotBodyRef.current) {
@@ -84,13 +87,14 @@ function Home() {
     setActiveProject(null);
     setQuery("");
     setNewUser(false);
+    // Switch back to projects view if user is in summary view
+    setCurrentView('projects');
   };
 
-  // --- UPDATED: Send message to backend chatbot ---
+  // Send message to backend chatbot
   const handleSendMessage = async () => {
     if (!chatInput.trim() && !pdfFile && !youtubeUrl.trim()) return;
 
-    // Display a user message based on what is being sent
     const userMsgText =
       chatInput ||
       (pdfFile ? `Summarize: ${pdfFile.name}` : `Summarize URL`);
@@ -101,7 +105,6 @@ function Home() {
     const fileToSend = pdfFile;
     const urlToSend = youtubeUrl;
 
-    // Reset inputs for the next message
     setChatInput("");
     setPdfFile(null);
     setYoutubeUrl("");
@@ -133,10 +136,11 @@ function Home() {
       };
       setChatMessages((prev) => [...prev, botMsg]);
 
-      // --- NEW: If summary exists, set it and switch view ---
+      // If a summary is returned, store it and automatically switch the view
       if (data.summary_content) {
         setSummaryContent(data.summary_content);
-        setShowChatbot(false); // Hide chatbot when summary is displayed
+        setCurrentView('summary'); // Switch to the summary view
+        setShowChatbot(false);
       }
     } catch (err) {
       console.error("Chatbot error:", err);
@@ -158,7 +162,55 @@ function Home() {
   return (
     <>
       <style>{`
-        /* --- Existing styles remain the same --- */
+        /* --- NEW STYLES FOR THE "NO SUMMARY" PLACEHOLDER --- */
+        .no-summary-view {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-image: linear-gradient(to bottom right, #3b82f6, #8b5cf6, #4f46e5);
+        }
+        .no-summary-card {
+          cursor: pointer;
+          padding: 24px 32px;
+          background-color: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(4px);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+          transition: all 0.5s ease-in-out;
+        }
+        .no-summary-card:hover {
+          transform: scale(1.1);
+          background-color: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .no-summary-card h1 {
+          color: white;
+          font-weight: bold;
+        }
+
+        /* --- EXISTING STYLES --- */
+        .summary-btn {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #1e293b;
+          color: #a78bfa; /* Matches the neon purple */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          border: none;
+          font-size: 20px;
+          margin-right: 15px; /* Space between it and the profile icon */
+          box-shadow: 0 0 6px #a78bfa66;
+        }
+        .summary-btn:hover {
+          background: #334155;
+        }
         body {
           margin: 0;
           background: #0f172a;
@@ -233,11 +285,24 @@ function Home() {
           padding: 20px;
           position: relative;
           overflow-y: auto;
+          /* Remove padding for the no-summary-view to be full screen */
+        }
+        main.no-padding {
+          padding: 0;
         }
         .top-bar {
           display: flex;
           justify-content: flex-end;
+          align-items: center; 
           margin-bottom: 20px;
+        }
+        .top-bar.in-summary {
+            padding: 20px; /* Add padding back when inside summary */
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            z-index: 10;
         }
         .profile {
           width: 40px;
@@ -359,13 +424,13 @@ function Home() {
           align-items: center;
           cursor: pointer;
           box-shadow: 0 0 8px #a78bfa88;
-          z-index: 21; /* Above chatbot window */
+          z-index: 21;
         }
         .chatbot-window {
           position: fixed;
           bottom: 80px;
           right: 20px;
-          width: 350px; /* Wider for tools */
+          width: 350px;
           height: 450px;
           background: #1e293b;
           border-radius: 12px;
@@ -430,7 +495,6 @@ function Home() {
           border-radius: 8px;
           box-shadow: 0 0 6px #a78bfa77;
         }
-        /* --- NEW STYLES FOR SUMMARY AND TOOLS --- */
         .summary-view {
           padding: 1rem;
         }
@@ -454,70 +518,14 @@ function Home() {
           border: 1px solid #334155;
         }
         .summary-text {
-          white-space: pre-wrap; /* Preserves line breaks and spaces */
-          word-wrap: break-word; /* Wraps long lines */
+          white-space: pre-wrap;
+          word-wrap: break-word;
           color: #cbd5e1;
           font-family: 'Consolas', 'Menlo', monospace;
           font-size: 14px;
           line-height: 1.6;
         }
-        .tools-btn {
-          background: #334155;
-          color: #f1f5f9;
-          font-size: 20px;
-          width: 40px;
-          height: 40px;
-          border-radius: 8px;
-          border: none;
-          cursor: pointer;
-        }
-        .tools-btn:hover {
-          background: #475569;
-        }
-        .tools-menu {
-          position: absolute;
-          bottom: calc(100% + 5px); /* Position above the footer */
-          left: 5px;
-          background: #334155;
-          border-radius: 8px;
-          padding: 8px;
-          width: 250px;
-          box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-          z-index: 30;
-        }
-        .tool-option {
-          display: block;
-          padding: 10px;
-          border-radius: 6px;
-          cursor: pointer;
-        }
-        .tool-option:hover {
-          background: #475569;
-        }
-        .tool-option-url {
-          padding: 10px;
-        }
-        .url-input {
-          width: 100%;
-          background: #1e293b;
-          border: 1px solid #64748b;
-          color: white;
-          padding: 8px;
-          border-radius: 4px;
-          margin-top: 5px;
-        }
-        .attachment-indicator {
-          padding: 0 10px 5px 10px;
-          font-size: 12px;
-          color: #94a3b8;
-        }
-        .attachment-indicator p {
-          margin: 0;
-          background: #334155;
-          padding: 4px 8px;
-          border-radius: 6px;
-          display: inline-block;
-        }
+        /* ... other styles ... */
       `}</style>
 
       <div className="home-container">
@@ -547,9 +555,22 @@ function Home() {
           )}
         </aside>
 
-        <main className="main">
-          <header className="top-bar">
-            <div></div>
+        {/* The 'no-padding' class is added conditionally to allow the placeholder to be full screen */}
+        <main className={`main ${currentView === 'summary' && !summaryContent ? 'no-padding' : ''}`}>
+          
+          {/* Top bar is always visible but has different styles when inside the full-screen placeholder */}
+          <header className={`top-bar ${currentView === 'summary' && !summaryContent ? 'in-summary' : ''}`}>
+            <div style={{ flex: 1 }}></div>
+
+            {/* --- SUMMARY BUTTON - ALWAYS VISIBLE --- */}
+            <button
+              className="summary-btn"
+              onClick={() => setCurrentView('summary')}
+              title="View Summary"
+            >
+              📝
+            </button>
+            
             <div
               className="profile"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -574,20 +595,30 @@ function Home() {
             )}
           </header>
 
-          {/* --- NEW: CONDITIONAL VIEW LOGIC --- */}
-          {summaryContent ? (
-            // --- 1. SUMMARY VIEW ---
-            <div className="summary-view">
-              <button className="back-btn" onClick={() => setSummaryContent(null)}>
-                &larr; Back to Projects
-              </button>
-              <h2 className="neon">Generated Summary</h2>
-              <div className="summary-content-box">
-                <pre className="summary-text">{summaryContent}</pre>
+          {/* --- UPDATED CONDITIONAL VIEW LOGIC --- */}
+          {currentView === 'summary' ? (
+            // 1. If the current view is 'summary'
+            summaryContent ? (
+              // 1a. And a summary EXISTS, show it
+              <div className="summary-view">
+                <button className="back-btn" onClick={() => setCurrentView('projects')}>
+                  &larr; Back to Projects
+                </button>
+                <h2 className="neon">Generated Summary</h2>
+                <div className="summary-content-box">
+                  <pre className="summary-text">{summaryContent}</pre>
+                </div>
               </div>
-            </div>
+            ) : (
+              // 1b. And a summary DOES NOT exist, show the placeholder
+              <div className="no-summary-view">
+                <div className="no-summary-card">
+                  <h1>There is no summary here</h1>
+                </div>
+              </div>
+            )
           ) : (
-            // --- 2. ROADMAP / WELCOME VIEW ---
+            // 2. Otherwise, show the default projects/welcome view
             <>
               {newUser && (
                 <div className="welcome centered">
@@ -631,71 +662,77 @@ function Home() {
         </main>
       </div>
 
-      {/* Chatbot */}
+      {/* Chatbot remains the same */}
       <div className="chatbot" onClick={() => setShowChatbot(!showChatbot)}>
         💬
       </div>
 
-      {showChatbot && (
-        <div className="chatbot-window">
-          <div className="chatbot-header">NeonMind Assistant</div>
-          <div className="chatbot-body" ref={chatbotBodyRef}>
+{showChatbot && (
+    <div className="chatbot-window">
+        {/* 1. HEADER (Should be first) */}
+        <div className="chatbot-header">NeonMind Assistant</div>
+        
+        {/* 2. BODY (Where messages will now appear correctly) */}
+        <div className="chatbot-body" ref={chatbotBodyRef}>
             {chatMessages.map((msg, i) => (
-              <div key={i} className={`chat-msg ${msg.sender === "user" ? "user" : "bot"}`}>
-                {msg.text}
-              </div>
+                <div key={i} className={`chat-msg ${msg.sender === "user" ? "user" : "bot"}`}>
+                    {msg.text}
+                </div>
             ))}
-          </div>
-          <div className="attachment-indicator">
+        </div>
+
+        {/* 3. ATTACHMENT INDICATOR (Optional, but good to have) */}
+        <div className="attachment-indicator">
             {pdfFile && <p>📄 {pdfFile.name}</p>}
             {youtubeUrl && <p>🔗 YouTube URL attached</p>}
-          </div>
-          <div className="chatbot-footer">
-            {/* --- NEW: TOOLS BUTTON AND MENU --- */}
+        </div>
+
+        {/* 4. FOOTER (The input area, should be last) */}
+        <div className="chatbot-footer">
             <button className="tools-btn" onClick={() => setShowToolsMenu(!showToolsMenu)}>
-              +
+            +
             </button>
             {showToolsMenu && (
-              <div className="tools-menu">
+            <div className="tools-menu">
                 <label
-                  htmlFor="pdf-upload"
-                  className="tool-option"
-                  onClick={() => fileInputRef.current.click()}
+                htmlFor="pdf-upload"
+                className="tool-option"
+                onClick={() => fileInputRef.current.click()}
                 >
-                  📎 Upload PDF
+                📎 Upload PDF
                 </label>
                 <input
-                  id="pdf-upload"
-                  type="file"
-                  accept=".pdf"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
+                id="pdf-upload"
+                type="file"
+                accept=".pdf"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
                 />
                 <div className="tool-option-url">
-                  <span>📺 YouTube URL</span>
-                  <input
+                <span>📺 YouTube URL</span>
+                <input
                     type="text"
                     placeholder="Paste link here..."
                     value={youtubeUrl}
                     onChange={(e) => setYoutubeUrl(e.target.value)}
                     className="url-input"
-                  />
+                />
                 </div>
-              </div>
+            </div>
             )}
 
             <input
-              type="text"
-              placeholder="Type a message..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            type="text"
+            placeholder="Type a message..."
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             />
             <button onClick={handleSendMessage}>Send</button>
-          </div>
         </div>
-      )}
+    </div>
+)}
     </>
   );
 }
