@@ -1,204 +1,166 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
 
-function App() {
-  const [projects, setProjects] = useState([]);
-  const [newUser, setNewUser] = useState(true);
-  const [query, setQuery] = useState("");
-  const [activeProject, setActiveProject] = useState(null);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showChatbot, setShowChatbot] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
+// --- Static Data Mockup ---
+const STATS = [
+  { icon: '🕒', title: 'Total Study Time', value: '2h 15m' },
+  { icon: '🔥', title: 'Study Streak', value: '3 days' },
+  { icon: '◉', title: 'Total Sessions', value: '3' },
+  { icon: '📈', title: 'Avg Session', value: '45m' },
+];
 
-  // Create roadmap
-  const handleGenerateRoadmap = () => {
-    if (!query.trim()) return;
-    const newProject = {
-      id: Date.now(),
-      title: query,
-      steps: generateDummyRoadmap(query),
+const RECENT_SESSIONS = [
+  { topic: 'Machine Learning', date: 'Oct 9, 09:05 PM', duration: '30m' },
+  { topic: 'Web Dev', date: 'Oct 8, 09:05 PM', duration: '1h 0m' },
+  { topic: 'Machine Learning', date: 'Oct 7, 09:05 PM', duration: '45m' },
+];
+
+// --- Sub-Components ---
+const Sidebar = () => (
+  <aside className="sidebar">
+    <div className="logo">NeonMind</div>
+    <button className="new-project-btn">+ New Project</button>
+    <div className="recent-projects">
+      <h3>RECENT PROJECTS</h3>
+      <p>No projects yet. Start your first roadmap!</p>
+    </div>
+  </aside>
+);
+
+const UserDropdown = ({ isDropdownOpen, toggleDropdown, goToDashboard }) => (
+  <div className="relative">
+    <button className="user-profile" onClick={toggleDropdown}>JD</button>
+    {isDropdownOpen && (
+      <div className="dropdown-menu">
+        <div className="dropdown-header">JD</div>
+        <div className="dropdown-item" onClick={goToDashboard}>View Progress</div>
+        <div className="dropdown-item">Profile</div>
+        <div className="dropdown-item">Settings</div>
+        <div className="dropdown-item">Logout</div>
+      </div>
+    )}
+  </div>
+);
+
+const HomePage = ({ goToDashboard }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.user-profile') && !event.target.closest('.dropdown-menu')) {
+        setIsDropdownOpen(false);
+      }
     };
-    setProjects([...projects, newProject]);
-    setActiveProject(newProject);
-    setNewUser(false);
-    setQuery("");
-  };
-
-  // Dummy roadmap
-  const generateDummyRoadmap = (topic) => {
-    return [
-      `Introduction to ${topic}`,
-      `Core Concepts of ${topic}`,
-      `Intermediate Projects in ${topic}`,
-      `Advanced ${topic} Techniques`,
-      `Final Project: Build something with ${topic}`,
-    ];
-  };
-
-  const handleNewProject = () => {
-    setActiveProject(null);
-    setQuery("");
-  };
-
-  // Chatbot
-  const handleSendMessage = () => {
-    if (!chatInput.trim()) return;
-    const newMessage = { sender: "user", text: chatInput };
-    setChatMessages([...chatMessages, newMessage, { sender: "bot", text: "Got it! I'll think about that." }]);
-    setChatInput("");
-  };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
-    <div className="app-container">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <h2 className="logo">🌌 NeonMind</h2>
-        <button className="new-project-btn" onClick={handleNewProject}>
-          + New Project
-        </button>
+    <div className="main-content">
+      <header className="header">
+        <UserDropdown 
+          isDropdownOpen={isDropdownOpen}
+          toggleDropdown={() => setIsDropdownOpen(!isDropdownOpen)}
+          goToDashboard={() => { goToDashboard(); setIsDropdownOpen(false); }}
+        />
+      </header>
 
-        <h3 className="recent">RECENT PROJECTS</h3>
-        {projects.length === 0 ? (
-          <p className="no-projects">No projects yet. Start your first roadmap!</p>
-        ) : (
-          <ul className="project-list">
-            {projects.map((p) => (
-              <li
-                key={p.id}
-                className={activeProject?.id === p.id ? "active" : ""}
-                onClick={() => setActiveProject(p)}
-              >
-                {p.title}
-              </li>
-            ))}
-          </ul>
-        )}
-      </aside>
+      <section className="welcome-section">
+        <h1>Welcome to <span>NeonMind</span></h1>
+        <p>Turn any topic into a glowing learning roadmap ✨</p>
 
-      {/* Main */}
-      <main className="main">
-        <header className="top-bar">
-          <div></div>
-          <div
-            className="profile"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
-          >
-            JD
-          </div>
+        <div className="search-bar">
+          <input type="text" placeholder="What would you like to learn today?" />
+          <button>Generate Roadmap</button>
+        </div>
 
-          {showProfileMenu && (
-            <div className="profile-menu">
-              <p>👤 Profile</p>
-              <p>⚙️ Settings</p>
-              <p>🚪 Logout</p>
-            </div>
-          )}
-        </header>
+        <div className="popular-topics">
+          Popular: 
+          {['Machine Learning', 'Web Dev', 'Data Science', 'UI/UX'].map(topic => (
+            <span key={topic} className="topic-tag">{topic}</span>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
 
-        {/* Welcome screen */}
-        {newUser && (
-          <div className="welcome centered">
-            <h1>Welcome to <span className="neon">NeonMind</span></h1>
-            <p className="subtitle">
-              Turn any topic into a glowing learning roadmap ✨
-            </p>
+const Dashboard = ({ goToHome }) => (
+  <div className="main-content">
+    <header className="dashboard-header">
+      <button id="back-to-dashboard-btn" onClick={goToHome}>← Back to Dashboard</button>
+      <div className="user-profile">JD</div>
+    </header>
 
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="What would you like to learn today?"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <button onClick={handleGenerateRoadmap}>
-                Generate Roadmap
-              </button>
-            </div>
+    <h2>Progress Tracker</h2>
 
-            <div className="popular-topics">
-              <span>Popular:</span>
-              {["Machine Learning", "Web Dev", "Data Science", "UI/UX"].map(
-                (topic) => (
-                  <button
-                    key={topic}
-                    onClick={() => {
-                      setQuery(topic);
-                      handleGenerateRoadmap();
-                    }}
-                  >
-                    {topic}
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Returning search */}
-        {!newUser && !activeProject && (
-          <div className="search-box-small centered">
-            <input
-              type="text"
-              placeholder="Start a new roadmap..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <button onClick={handleGenerateRoadmap}>Generate</button>
-          </div>
-        )}
-
-        {/* Roadmap */}
-        {!newUser && activeProject && (
-          <div className="roadmap">
-            <h2 className="neon">{activeProject.title} Roadmap</h2>
-            <div className="roadmap-steps">
-              {activeProject.steps.map((step, idx) => (
-                <div key={idx} className="step-card">
-                  <span className="step-number">{idx + 1}</span>
-                  <p>{step}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Chatbot */}
-      <div className="chatbot" onClick={() => setShowChatbot(!showChatbot)}>
-        💬
-      </div>
-
-      {showChatbot && (
-        <div className="chatbot-window">
-          <div className="chatbot-header">NeonMind Assistant</div>
-          <div className="chatbot-body">
-            {chatMessages.map((msg, i) => (
-              <div
-                key={i}
-                className={`chat-msg ${msg.sender === "user" ? "user" : "bot"}`}
-              >
-                {msg.text}
-              </div>
-            ))}
-          </div>
-          <div className="chatbot-footer">
-            <input
-              type="text"
-              placeholder="Type a message..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            />
-            <button onClick={handleSendMessage}>Send</button>
+    <div className="stat-cards-container">
+      {STATS.map((stat, i) => (
+        <div key={i} className="stat-card">
+          <span className="stat-icon">{stat.icon}</span>
+          <div className="stat-info">
+            <span className="stat-title">{stat.title}</span>
+            <span className="stat-value">{stat.value}</span>
           </div>
         </div>
+      ))}
+    </div>
+
+    <div className="dashboard-panels">
+      <div className="panel study-timer-panel">
+        <h3>Study Timer</h3>
+        <select>
+          <option>Choose a topic...</option>
+          <option>Machine Learning</option>
+          <option>Web Dev</option>
+        </select>
+        <button className="start-session-btn">Start Study Session</button>
+      </div>
+
+      <div className="panel today-progress-panel">
+        <h3>Today's Progress</h3>
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: '30%' }}></div>
+        </div>
+        <p>Daily goal: 3 hours</p>
+      </div>
+    </div>
+
+    <div className="dashboard-bottom-panels">
+      <div className="panel progress-by-topic">
+        <h3>Progress by Topic</h3>
+        <p>Visualization chart goes here.</p>
+      </div>
+      <div className="panel recent-sessions">
+        <h3>Recent Study Sessions</h3>
+        {RECENT_SESSIONS.map((session, i) => (
+          <div key={i} className="session-item">
+            <div>
+              <span className="session-topic">{session.topic}</span>
+              <span className="session-date">{session.date}</span>
+            </div>
+            <span className="session-duration">{session.duration}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const App = () => {
+  const [currentView, setCurrentView] = useState('home'); // 'home' or 'dashboard'
+  return (
+    <div className="app-container">
+      <Sidebar />
+      {currentView === 'home' ? (
+        <HomePage goToDashboard={() => setCurrentView('dashboard')} />
+      ) : (
+        <Dashboard goToHome={() => setCurrentView('home')} />
       )}
     </div>
   );
-}
+};
 
 export default App;
-
 
 
